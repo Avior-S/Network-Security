@@ -27,15 +27,15 @@ parser.add_argument("-d" ,"--delay", type=float, default=1,
 parser.add_argument("-gw" , type=str, default=getGW(),
                     help="should GW be attacked as well")
 parser.add_argument("-t" ,"--target", type=str,
-                    help="The attacked ip")
+                    help="The attacked ip", mandatory=True)
 
 args = parser.parse_args()
 
 
 
 def main():
-    print(args.iface)
     print args
+    print(args.iface)
 
 if __name__=="__main__":
     main()
