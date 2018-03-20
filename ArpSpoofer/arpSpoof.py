@@ -52,7 +52,7 @@ required.add_argument("-t" ,"--target", type=str,
 args = parser.parse_args()
 
 def main():
- #   print args.target you must write this like this and not args.t
+ # print args.target you must write this like this and not args.t
 
     arpspoofing(args.target,args.delay)
  #we need to learn about threads in python and about sniff(filter, prn) in scapy for man in the middle
