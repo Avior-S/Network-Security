@@ -8,11 +8,18 @@ def get_GW():
     p = sr1(IP(dst="8.8.8.8", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=0)
     return p.src
 
+def find_mac_by_ip(ip):
+    result = sr1(ARP(op=ARP.who_has, pdst=ip),verbose=0)
+    return result.hwsrc #The mac
+
 def duplicate_ip_with_same_mac():
     pass
 
-def arp_gw(ipGW):
-    os.system('arp | awk `$1=={} print {$3}`', ipGW)
+def arp_gw(macGW,ipGW):
+    #rstrip: remove \n from the string
+    mac=os.popen("arp | awk '{if ($1==\"%s\") print $3}'" % (ipGW)).read().rstrip()
+    return mac!=macGW
+
 
 def percente_is_at(pcks):
     pass
@@ -20,6 +27,7 @@ def percente_is_at(pcks):
 
 def main():
     ipGW=get_GW()
+    macGW=find_mac_by_ip(ipGW)
     while True:
         pass
 
