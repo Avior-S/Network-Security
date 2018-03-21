@@ -53,7 +53,7 @@ def main():
     #check if the user enter src
     if ipSrc != args.src:
         ipSrc=args.src
-        macSrc=find_mac_by_ip(myIp)
+        macSrc=find_mac_by_ip(ipSrc)
         print 'src change'
     #if the user -gw
     if args.gateway>0:
