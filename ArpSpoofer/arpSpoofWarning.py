@@ -23,7 +23,7 @@ def duplicate_ip_with_same_mac():
     pass
 
 def arp_gw(macGW,ipGW):
-    #rstrip: remove \n from the string
+    # rstrip: remove \n from the string
     mac=os.popen("arp | awk '{if ($1==\"%s\") print $3}'" % (ipGW)).read().rstrip()
     if mac!=macGW:
         count+=1

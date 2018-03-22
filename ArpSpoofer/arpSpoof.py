@@ -50,7 +50,7 @@ args = parser.parse_args()
 def main():
     macVic=find_mac_by_ip(args.target)
     macSrc,ipSrc=find_my_IP_and_MAC()
-    #check if the user enter src
+    # check if the user enter src
     if ipSrc != args.src:
         ipSrc=args.src
         macSrc=find_mac_by_ip(ipSrc)
