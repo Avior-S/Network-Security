@@ -9,13 +9,13 @@ def find_my_IP_and_MAC():
     """
     mac = ':'.join(re.findall('..', '%012x' % getnode()))
     # I write IP and not domain cause i want to save time.
-    p = sr1(IP(dst="8.8.8.8", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=0,timeout=5) #verbose = withuot output
+    p = sr1(IP(dst="google.com", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=1,timeout=5) #verbose = withuot output
     return mac,p.dst
 
 def get_GW():
     """send echo pck when the ttl is 0 so when it arrive to the GW he send me back a TTL ERROR (ICMP MESSEGE)
     , the src is the GW"""
-    p = sr1(IP(dst="8.8.8.8", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=0)
+    p = sr1(IP(dst="google.com", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=0)
     return p.src
 
 def find_mac_by_ip(ip):
