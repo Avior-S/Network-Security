@@ -63,7 +63,7 @@ def main():
     else:
         pck=create_arp_response_packet(ipGW,myMac,args.target,macVic)
 
-    send(pck,inter=args.delay,loop=1)
+    send(pck,inter=args.delay,loop=1)   
 
 
 if __name__=="__main__":

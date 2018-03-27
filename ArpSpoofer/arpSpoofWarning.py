@@ -26,7 +26,7 @@ def duplicate_ip_with_same_mac():
     (out, err) = proc.communicate()
     if err!="":
         print err
-        return
+  #      return
     macsInNet=out.split('\n')
     if len(macsInNet) != len(set(macsInNet)):
         count+=1
@@ -39,7 +39,7 @@ def arp_gw(macGW,ipGW):
     (out, err) = proc.communicate()
     if err!="":
         print err
-        return ""
+ #       return ""
     mac=out.rstrip()
     if mac!=macGW:
         count+=1
@@ -47,7 +47,7 @@ def arp_gw(macGW,ipGW):
 
 def percente_is_at():
     global count
-    pkts = sniff(count=9,filter='arp',timeout=20)
+    pkts = sniff(count=7,filter='arp',timeout=16)
     #change the stdout for get the sniff result
     old_stdout = sys.stdout
     sys.stdout = mystdout
@@ -55,7 +55,7 @@ def percente_is_at():
     #return the stdout as usual
     sys.stdout = old_stdout
     countIsAt=len(mystdout.getvalue().split('is at')) - 1 #getvalue return string of the output (p.show())
-    if(countIsAt>6):
+    if(countIsAt>=4):
         count+=1
         return "A lot arp response send"
     # examine mystdout.getvalue()
@@ -73,7 +73,7 @@ def main():
         if count>=2:
             print "Warning, Attacked"
             print a, '\n', p, '\n', d
-            choice=input("Do use want to scan again? \npress 1 else press 0")
+            choice=input("Do use want to scan again? \npress 1 else press 0\n")
             if choice!=1:
                 break
         else:
