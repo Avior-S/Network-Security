@@ -1,7 +1,8 @@
 from scapy.all import *
-import os
+
 from cStringIO import StringIO
 import sys
+import subprocess
 
 
 
@@ -20,16 +21,29 @@ def find_mac_by_ip(ip):
     return result.hwsrc #The mac
 
 def duplicate_ip_with_same_mac():
-    pass
+    proc = subprocess.Popen(["arp | awk '{print $3}'"], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    if err!="":
+        print err
+        return
+    macsInNet=out.split('\n')
+    if len(macsInNet) != len(set(macsInNet)):
+        count+=1
+    return "Duplicate ip with the same mac"
 
 def arp_gw(macGW,ipGW):
     # rstrip: remove \n from the string
-    mac=os.popen("arp | awk '{if ($1==\"%s\") print $3}'" % (ipGW)).read().rstrip()
+    proc = subprocess.Popen(["arp | awk '{if ($1==\"%s\") print $3}'" % (ipGW)], stdout=subprocess.PIPE, shell=True)
+    (out, err) = proc.communicate()
+    if err!="":
+        print err
+        return ""
+    mac=out.rstrip()
     if mac!=macGW:
         count+=1
-    return
+    return "Mac gateway change"
 
-def percente_is_at(pcks):
+def percente_is_at():
     pkts = sniff(count=9,filter='arp',timeout=20)
     #change the stdout for get the sniff result
     old_stdout = sys.stdout
@@ -40,7 +54,9 @@ def percente_is_at(pcks):
     countIsAt=len(mystdout.getvalue().split('is at')) - 1 #getvalue return string of the output (p.show())
     if(countIsAt>6):
         count+=1
+        return "A lot arp response send"
     # examine mystdout.getvalue()
+    return ""
 
 
 def main():
@@ -48,7 +64,15 @@ def main():
     ipGW=get_GW()
     macGW=find_mac_by_ip(ipGW)
     while True:
-        pass
-
+        p = percente_is_at()
+        a = arp_gw(macGW,ipGW)
+        d = duplicate_ip_with_same_mac()
+        if count>=2:
+            print "Warning, Attacked"
+            print a, '\n', p, '\n', d
+            choice=input("Do use want to scan again? \npress 1 else press 0")
+            if choice!=1:
+                break
+        count=0
 if __name__=="__main__":
     main()
