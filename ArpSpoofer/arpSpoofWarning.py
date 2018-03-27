@@ -21,6 +21,7 @@ def find_mac_by_ip(ip):
     return result.hwsrc #The mac
 
 def duplicate_ip_with_same_mac():
+    global count
     proc = subprocess.Popen(["arp | awk '{print $3}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     if err!="":
@@ -33,6 +34,7 @@ def duplicate_ip_with_same_mac():
 
 def arp_gw(macGW,ipGW):
     # rstrip: remove \n from the string
+    global count
     proc = subprocess.Popen(["arp | awk '{if ($1==\"%s\") print $3}'" % (ipGW)], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     if err!="":
@@ -44,6 +46,7 @@ def arp_gw(macGW,ipGW):
     return "Mac gateway change"
 
 def percente_is_at():
+    global count
     pkts = sniff(count=9,filter='arp',timeout=20)
     #change the stdout for get the sniff result
     old_stdout = sys.stdout
@@ -73,6 +76,8 @@ def main():
             choice=input("Do use want to scan again? \npress 1 else press 0")
             if choice!=1:
                 break
+        else:
+            print "your computer is clear from arpSpoofing attack \n count = ", count
         count=0
 if __name__=="__main__":
     main()

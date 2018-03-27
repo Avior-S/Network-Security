@@ -9,7 +9,7 @@ def find_my_IP_and_MAC():
     """
     mac = ':'.join(re.findall('..', '%012x' % getnode()))
     # I write IP and not domain cause i want to save time.
-    p = sr1(IP(dst="google.com", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=1,timeout=5) #verbose = withuot output
+    p = sr1(IP(dst="google.com", ttl=0) / ICMP() / "XXXXXXXXXXX",verbose=0,timeout=5) #verbose = withuot output
     return mac,p.dst
 
 def get_GW():
