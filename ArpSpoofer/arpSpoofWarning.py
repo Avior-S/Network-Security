@@ -24,26 +24,28 @@ def duplicate_ip_with_same_mac():
     global count
     proc = subprocess.Popen(["arp | awk '{print $3}'"], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    if err!="":
+    if err!=None:
         print err
   #      return
     macsInNet=out.split('\n')
     if len(macsInNet) != len(set(macsInNet)):
         count+=1
-    return "Duplicate ip with the same mac"
+        return "Duplicate ip with the same mac"
+    return ""
 
 def arp_gw(macGW,ipGW):
     # rstrip: remove \n from the string
     global count
     proc = subprocess.Popen(["arp | awk '{if ($1==\"%s\") print $3}'" % (ipGW)], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    if err!="":
+    if err!=None:
         print err
  #       return ""
     mac=out.rstrip()
     if mac!=macGW:
         count+=1
-    return "Mac gateway change"
+        return "Mac gateway change"
+    return ""
 
 def percente_is_at():
     global count
@@ -51,11 +53,12 @@ def percente_is_at():
     #change the stdout for get the sniff result
     old_stdout = sys.stdout
     sys.stdout = mystdout
+
     pkts.show()
     #return the stdout as usual
     sys.stdout = old_stdout
     countIsAt=len(mystdout.getvalue().split('is at')) - 1 #getvalue return string of the output (p.show())
-    if(countIsAt>=4):
+    if(countIsAt>4):
         count+=1
         return "A lot arp response send"
     # examine mystdout.getvalue()
