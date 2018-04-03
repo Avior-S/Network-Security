@@ -52,6 +52,7 @@ def percente_is_at():
     pkts = sniff(count=7,filter='arp',timeout=16)
     #change the stdout for get the sniff result
     old_stdout = sys.stdout
+    mystdout.reset()
     sys.stdout = mystdout
 
     pkts.show()
