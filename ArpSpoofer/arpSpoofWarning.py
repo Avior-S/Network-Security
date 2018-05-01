@@ -77,7 +77,7 @@ def main():
         if count>=2:
             print "Warning, Attacked"
             print a, '\n', p, '\n', d
-            choice=input("Do use want to scan again? \npress 1 else press 0\n")
+            choice=input("Do U want to scan again? \npress 1 else press 0: ")
             if choice!=1:
                 break
         else:
